@@ -18,7 +18,7 @@ int currentColorValueBlue;
 int switchPin1 = 2;              // Switch connected to digital pin 2
 int switchPin2 = 3;
 int switchPin3 = 4;
-int doorLock   = 9;
+int doorLock   = 8;
 int doorState;
 int switchStatus1;
 int switchStatus2;
@@ -91,9 +91,6 @@ void loop()                     // run over and over again
     else{
       Serial.write("1");
       digitalWrite(doorLock,HIGH);
-   
-
-     
      }
    
     
@@ -123,7 +120,8 @@ void loop()                     // run over and over again
       buttonValue++;
     }
     if(buttonValue==3){
-      verify(&verifyCode,&buttonValue,passcode,inputCode); 
+      verify(&verifyCode,&isDoorLock,&buttonValue,passcode,inputCode); 
+      
     }
     delay(250);
 
@@ -131,7 +129,7 @@ void loop()                     // run over and over again
   
 }
 
-void verify(boolean *verifyCode, int *buttonValue,int passcode[3],int inputCode[3]){
+void verify(boolean *verifyCode,boolean *isDoorLock, int *buttonValue,int passcode[3],int inputCode[3]){
    Serial.println("verifying code");
     int i = 0;
    while(*verifyCode == true&&i<3){      
@@ -147,9 +145,11 @@ void verify(boolean *verifyCode, int *buttonValue,int passcode[3],int inputCode[
    if(*verifyCode ==true){
      Serial.println("UnlockDoor");
      digitalWrite(doorLock,LOW);
+     *isDoorLock = false;
    }
    else {
      digitalWrite(doorLock,HIGH);
+     *isDoorLock = true;
    }
    
    *verifyCode = true;
