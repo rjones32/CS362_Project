@@ -2,6 +2,18 @@
  * Switch test program
  */
 
+#include <LiquidCrystal.h>
+
+// Init the Pins used for PWM
+const int bluePin = 13;
+const int redPin = 11;
+const int greenPin = 10;
+
+// Init our Vars
+int currentColorValueRed;
+int currentColorValueGreen;
+int currentColorValueBlue;
+
 
 int switchPin1 = 2;              // Switch connected to digital pin 2
 int switchPin2 = 3;
@@ -18,12 +30,18 @@ int i= 0;
 char data[1];
 boolean verifyCode = true;
 boolean isDoorLock;
+//LiquidCrystal lcd(9,10,5,6,7,8);
 
 void setup()                    // run once, when the sketch starts
 {
   Serial.begin(9600);           // set up Serial library at 9600 bps
   
-  
+  //lcd.begin(16,2);
+  //lcd.clear();
+  //lcd.print("Dark");
+  pinMode(redPin,OUTPUT);
+  pinMode(greenPin,OUTPUT);
+  pinMode(bluePin,OUTPUT);
   pinMode(switchPin1, INPUT);    // sets the digital pin as input to read switch
   pinMode(switchPin2, INPUT);
   pinMode(switchPin3, INPUT);
@@ -35,12 +53,30 @@ void setup()                    // run once, when the sketch starts
 
 void loop()                     // run over and over again
 {
+  
   switchStatus1 = digitalRead(switchPin1);
   switchStatus2 = digitalRead(switchPin2);
   switchStatus3 = digitalRead(switchPin3);
   doorState     = digitalRead(doorLock);
   Serial.println(digitalRead(doorLock));
   //Serial.write(doorState);
+     
+  //lcd.clear();  
+   if(isDoorLock==true){
+     //lcd.print("Door is Locked");
+     analogWrite(greenPin,255);
+      analogWrite(redPin,0);
+      analogWrite(bluePin,255);
+   }
+   else if(isDoorLock==false){
+     //lcd.print("Door is unLocked");
+     analogWrite(greenPin,255);
+      analogWrite(redPin,255);
+      analogWrite(bluePin,0);
+   
+   }
+   
+ 
  
   if(Serial.available()>0){
     //Serial.println("Read from Bluetooth ");
@@ -49,11 +85,15 @@ void loop()                     // run over and over again
     if(isDoorLock==false){
       Serial.write("0");
       digitalWrite(doorLock,LOW);
+      
      }
    
     else{
       Serial.write("1");
       digitalWrite(doorLock,HIGH);
+   
+
+     
      }
    
     
@@ -63,6 +103,7 @@ void loop()                     // run over and over again
    else if(Serial.available()<0||verifyCode==false){
       isDoorLock=true;
       digitalWrite(doorLock,HIGH); 
+      
    }
  
  
